@@ -1,5 +1,6 @@
 # Ignore papers directory
 papers/*
+results/*
 
 # Ignore specific file types
 *.log
