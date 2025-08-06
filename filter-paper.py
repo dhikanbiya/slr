@@ -36,7 +36,7 @@ def main(csv_file, llm_model):
         
     df = add_classification(df)
     filename = Path(csv_file).stem
-    df.to_csv(f'{filename}_{llm_model}_result.csv', index=False)
+    df.to_csv(f'results/{filename}_{llm_model}_result.csv', index=False)
     print("saved")
 
 
