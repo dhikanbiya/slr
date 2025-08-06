@@ -33,8 +33,7 @@ def main(csv_file, llm_model):
         chunklist.append(chunk)    
     df = pd.concat(chunklist, ignore_index=True)
 
-    df = df.head(10)
-    
+        
     df = add_classification(df)
     filename = Path(csv_file).stem
     df.to_csv(f'{filename}_{llm_model}_result.csv', index=False)
