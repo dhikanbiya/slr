@@ -5,6 +5,7 @@ results/*
 # Ignore specific file types
 *.log
 *.tmp
+*.xlsx
 
 # Ignore OS-specific files
 .DS_Store  # macOS
