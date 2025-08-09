@@ -33,7 +33,13 @@ def main(csv_file, llm_model):
         chunklist.append(chunk)    
     df = pd.concat(chunklist, ignore_index=True)
 
-        
+    has_nan  =df.isnull().values.any()    
+    nan_counts = df.isnull().sum()
+    print(nan_counts)
+    print(df[df['Abstract'].isnull()]) 
+    df = df.dropna(subset=['Abstract'])
+
+    # df = df.head(10)
     df = add_classification(df)
     filename = Path(csv_file).stem
     df.to_csv(f'results/{filename}_{llm_model}_result.csv', index=False)
