@@ -42,7 +42,7 @@ def add_classification(df):
     for index,row in df.iterrows():
        verdict= ollama_response(row['Publisher'])
        reputable.append(verdict)
-    df['reputable']=reputable
+    df['Reputable']=reputable
     return df
 
 def main(csv_file, llm_model):
@@ -59,7 +59,7 @@ def main(csv_file, llm_model):
     print(df[df['Publisher'].isnull()])
     df = df.dropna(subset=['Publisher'])
 
-    df = df.head(10)
+    # df = df.head(10)
     df = add_classification(df)
     filename = Path(csv_file).stem
     df.to_csv(f'results/reputable_{filename}_{llm_model}_result.csv', index=False)
