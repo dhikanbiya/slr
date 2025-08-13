@@ -4,7 +4,27 @@ from ollama import ChatResponse
 from pathlib import Path
 
 
-prompt = '"determine if the conferences or the journal is highly reputable. Answer only with the Q ranking for the journal for example Q1, Q2, Q3 etc. and for the confereces that higly reputable answer with YES. If the journal or the conferences is not highly reputable simply answer with NO"' 
+
+# prompt = '''"
+# You are a classification bot. Your only function is to check a publication name and return a single, unadorned output based on a set of strict rules. You will not provide any explanations, justifications, or additional text.
+# Instructions:
+# Check the publication name provided.Determine if it is a journal or a conference.If it's a journal: Find its Scimago Journal Rank (SJR) quartile. Your output must be Q1, Q2, Q3, or Q4.
+# If a Q ranking is not available: Find its general reputation. Your output must be YES (for reputable) or NO (for not reputable)
+# If it's a conference: Find its general reputation. Your output must be YES (for highly reputable) or NO (for not reputable).
+# If the publication cannot be found: Your output must be N/A
+# Final Output: Provide only the final result (Q1, Q2, Q3, Q4, YES, NO, or N/A). Do not add any other words, sentences, or punctuation.
+# Example Input: "Journal of Applied Physics"
+# Example Output: "Q1"
+# Example Input: "NeurIPS"
+# Example Output: "YES"
+# Example Input: "Weekly Research Gazette"
+# Example Output: "N/A"
+# "''' 
+
+
+
+prompt = '''"Check the publication name, whether it is a journal or conference.If it is a journal, find its Scimago Journal Rank (SJR) quartile. Provide its Q ranking as Q1, Q2, Q3, or Q4.f the Scimago Journal Rank is unavailable, or if the journal is not indexed on Scimago, attempt to find its reputation from other sources. If it is a reputable journal, answer with "YES". If it is not, answer with "NO".If it is a conference, answer with "YES" if it is highly reputable and "NO" if it is not.If the publication name cannot be found or is not a known journal or conference, answer with "N/A".No explanation or additional text is needed; just the direct answer.Output format:Journals: Q1/Q2/Q3/Q4, YES, NO, or N/A
+.Conferences: YES, NO, or N/A"''' 
 
 def ollama_response(abstract):    
     response: ChatResponse = chat(model='llama4:latest',messages=[
@@ -20,7 +40,7 @@ def add_classification(df):
     reputable = []
     
     for index,row in df.iterrows():
-       verdict= ollama_response(row['Source title'])
+       verdict= ollama_response(row['Publisher'])
        reputable.append(verdict)
     df['reputable']=reputable
     return df
@@ -33,16 +53,16 @@ def main(csv_file, llm_model):
         chunklist.append(chunk)    
     df = pd.concat(chunklist, ignore_index=True)
 
-    has_nan  =df.isnull().values.any()    
+     
     nan_counts = df.isnull().sum()
     print(nan_counts)
-    print(df[df['Source title'].isnull()]) 
-    df = df.dropna(subset=['Source title'])
+    print(df[df['Publisher'].isnull()])
+    df = df.dropna(subset=['Publisher'])
 
-    # df = df.head(10)
+    df = df.head(10)
     df = add_classification(df)
     filename = Path(csv_file).stem
-    df.to_csv(f'results/reputation_check_{filename}_{llm_model}_result.csv', index=False)
+    df.to_csv(f'results/reputable_{filename}_{llm_model}_result.csv', index=False)
     print("saved")
 
 
